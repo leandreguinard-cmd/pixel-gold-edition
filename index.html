@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIXEL GOLD - Installation</title>
+    <style>
+        body {
+            background-color: #0a0a0a;
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            user-select: none;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            border: 2px solid #D4AF37;
+            padding: 40px;
+            border-radius: 30px;
+            background: #111;
+            box-shadow: 0 10px 50px rgba(212, 175, 55, 0.2);
+            width: 420px;
+        }
+
+        .step { display: none; }
+        .active { display: block; }
+
+        h1 { font-size: 3.5em; color: #D4AF37; margin: 0; letter-spacing: 5px; }
+        .subtitle { color: #666; font-size: 0.8em; margin-bottom: 30px; }
+
+        .btn {
+            background-color: #D4AF37;
+            color: black;
+            border: none;
+            padding: 15px 40px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            text-transform: uppercase;
+            margin-top: 10px;
+        }
+
+        .btn-recommande {
+            background: linear-gradient(90deg, #D4AF37, #f1c40f);
+            width: 100%;
+        }
+
+        select, input {
+            background: #1a1a1a;
+            color: white;
+            border: 1px solid #333;
+            padding: 12px;
+            border-radius: 10px;
+            width: 100%;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .error-msg { color: #ff4d4d; font-size: 0.8em; margin-bottom: 10px; display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div id="step1" class="step active">
+            <h1>PIXEL</h1>
+            <div class="subtitle">PREMIUM GAMING ASSISTANT</div>
+            <button class="btn" onclick="goToStep(2)">Démarrer l'installation</button>
+        </div>
+
+        <div id="step2" class="step">
+            <h2 style="color:#D4AF37">MATÉRIEL</h2>
+            <select id="cpu">
+                <option value="i5">Intel i5 / Ryzen 5</option>
+                <option value="i7">Intel i7 / Ryzen 7</option>
+                <option value="i9">Intel i9 / Ryzen 9</option>
+            </select>
+            <input type="number" id="ram" placeholder="RAM (Go)">
+            <div id="ram-error" class="error-msg">⚠️ 16 Go de RAM requis.</div>
+            <button class="btn" onclick="validateConfig()">Continuer</button>
+        </div>
+
+        <div id="step3" class="step">
+            <h2 style="color:#D4AF37">JEU</h2>
+            <button class="btn btn-recommande" onclick="setGame('TOUT')">🌍 TOUT (Recommandé)</button>
+            <p style="font-size: 0.7em; color: #444;">— OU SPÉCIFIQUE —</p>
+            <select id="gameSelect">
+                <option value="none" disabled selected>Choisir un jeu...</option>
+                <option value="Roblox">Roblox</option>
+                <option value="Minecraft">Minecraft</option>
+                <option value="Fortnite">Fortnite</option>
+            </select>
+            <button class="btn" onclick="validateGame()">Valider</button>
+        </div>
+
+        <div id="step4" class="step">
+            <h2 style="color:#D4AF37">IDENTITÉ</h2>
+            <input type="text" id="iaName" placeholder="Nom de l'IA">
+            <div id="name-error" class="error-msg">⚠️ Nom trop long (8 max).</div>
+            <button class="btn" onclick="downloadPixel()">Télécharger</button>
+        </div>
+    </div>
+
+    <script>
+        // PROTECTION COFFRE-FORT (Version qui ne bloque pas les clics du site)
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.onkeydown = function(e) {
+            if (e.keyCode === 123 || (e.ctrlKey && (e.keyCode === 85 || e.keyCode === 73))) return false;
+        };
+
+        let selectedGame = "";
+
+        // NAVIGATION
+        function goToStep(s) {
+            document.querySelectorAll('.step').forEach(d => d.classList.remove('active'));
+            document.getElementById('step' + s).classList.add('active');
+        }
+
+        function validateConfig() {
+            const ram = document.getElementById('ram').value;
+            if (ram < 16) {
+                document.getElementById('ram-error').style.display = 'block';
+            } else {
+                goToStep(3);
+            }
+        }
+
+        function setGame(g) {
+            selectedGame = g;
+            goToStep(4);
+        }
+
+        function validateGame() {
+            const g = document.getElementById('gameSelect').value;
+            if (g !== "none") {
+                selectedGame = g;
+                goToStep(4);
+            }
+        }
+
+        function downloadPixel() {
+            const name = document.getElementById('iaName').value.trim();
+            if (name === "" || name.length > 8) {
+                document.getElementById('name-error').style.display = 'block';
+                return;
+            }
+
+            const content = "# SCRIPT PIXEL GOLD\nNOM = '" + name + "'\nGAME = '" + selectedGame + "'\nprint(f'Pixel {NOM} lance pour {GAME}...')";
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = name + "_Pixel.py";
+            a.click();
+            alert("✅ Téléchargement réussi !");
+        }
+    </script>
+</body>
+</html>
